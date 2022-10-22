@@ -1,8 +1,11 @@
  #! /bin/bash
 sudo su
 apt update
+echo 'install git'
 apt install git
 apt-get update
+#install docker
+echo "Installing Docker"
 apt-get install \
     ca-certificates \
     curl \
@@ -16,8 +19,9 @@ echo \
 chmod a+r /etc/apt/keyrings/docker.gpg
 apt-get update
 apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-git clone https://github.com/ChrisMythos/CloudApp.git /app
+#finish installing docker
+echo "Docker installed"
+git clone https://github.com/ChrisMythos/CloudApp.git /cloudapp
 cat > /etc/systemd/system/cloudapp.service << EOF
 [Unit]
 PartOf=docker.service
