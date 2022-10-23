@@ -11,7 +11,11 @@ while true; do
     echo "6. Create snapshot from instance"
     echo "7. Show all instances"
     echo "8. Show all snapshots"
-    echo "9. Exit"
+    echo "----------------------"
+    echo "first use"
+    echo "9. install gcloud"
+    echo "10. gloud init"
+    echo "11. Exit"
 
     read option
     #case statement
@@ -60,7 +64,17 @@ while true; do
         echo "Showing all snapshots"
         gcloud compute snapshots list
         ;;
-    9)
+
+    9) 
+        echo "install gcloud"   
+        curl -sSL https://sdk.cloud.google.com | bash
+        echo "please restart terminal"
+        ;;
+
+    10) echo "gcloud init"
+        gcloud init    
+        ;;
+    11)
         echo "Exiting"
         exit
         ;;
