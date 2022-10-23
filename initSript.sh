@@ -1,11 +1,18 @@
  #! /bin/bash
 sudo su
 apt update
+echo '-------------------------------------------------------------'
 echo 'install git'
-apt install git
+echo '-------------------------------------------------------------'
+apt install git -y
+echo '-------------------------------------------------------------'
+echo 'git installed'
+echo '-------------------------------------------------------------'
 apt-get update
 #install docker
+echo '-------------------------------------------------------------'
 echo "Installing Docker"
+echo '-------------------------------------------------------------'
 apt-get install \
     ca-certificates \
     curl \
@@ -18,9 +25,11 @@ echo \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 chmod a+r /etc/apt/keyrings/docker.gpg
 apt-get update
-apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 #finish installing docker
+echo '-------------------------------------------------------------'
 echo "Docker installed"
+echo '-------------------------------------------------------------'
 git clone https://github.com/ChrisMythos/CloudApp.git /cloudapp
 cat > /etc/systemd/system/cloudapp.service << EOF
 [Unit]
@@ -31,7 +40,7 @@ After=docker.service
 Restart=always
 User=root
 Group=root
-WorkingDirectory=/app/
+WorkingDirectory=/cloudapp/
 ExecStart=docker compose up
 ExecStop=docker compose down
 
@@ -41,3 +50,6 @@ EOF
 
 systemctl enable cloudapp
 systemctl start cloudapp
+echo '-------------------------------------------------------------'
+echo "CloudApp Service enabled and started"
+echo '-------------------------------------------------------------'
