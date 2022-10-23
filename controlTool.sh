@@ -19,6 +19,8 @@ while true; do
     1)
         echo "Creating instance from scratch"
         gcloud compute instances create cloud-app-auto --image-project=debian-cloud --image-family=debian-10 --metadata-from-file=startup-script=initSript.sh --zone=europe-west3-c
+        #attach disk
+        gcloud compute instances attach-disk cloud-app-auto --disk=cloud-app-auto-volume --zone=europe-west3-c
         echo 'Want to ports 80 and 3000 ? (y/n)'
         read ports
         if [ $ports = 'y' ]; then
@@ -30,7 +32,9 @@ while true; do
         ;;
     2)
         echo "Creating instance from snapshot"
-        gcloud compute instances create cloud-app-auto --zone=europe-west3-c --source-snapshot=cloud-app-auto-snapshot
+        gcloud compute instances create cloud-app-auto --zone=europe-west3-c --metadata-from-file=startup-script=initScriptSnap.sh --source-snapshot=cloud-app-auto-snapshot
+        #attach disk
+        gcloud compute instances attach-disk cloud-app-auto --disk=cloud-app-auto-volume --zone=europe-west3-c
         ;;
     3)
         echo "Starting instance"
