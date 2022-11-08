@@ -19,7 +19,6 @@
 	"features": {
 		"terraform": "latest",
 		"github-cli": "latest",
-		"node": "latest",
-		"python": "3.9"
+		"node": "latest"
 	}
 }
