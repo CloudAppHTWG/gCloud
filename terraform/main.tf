@@ -1,59 +1,62 @@
 # setup provider 
 provider "google" {
-  project     = "cloud-app-366313"
-  region      = "europe-west3-b"
-  credentials = file("../coderecources/ChristophJurisch.json")
+  project = var.project
+  region  = var.region
 }
 
-# app engine frontend angular
-resource "google_app_engine_flexible_app_version" "frontend" {
-  project    = "cloud-app"
-  service    = "frontend"
-  version_id = "v1"
-  runtime    = "custom"
-  deployment {
-    zip {
-      source_url = "../coderecources/CloudApp_frontend.zip"
-    }
-  }
-  readiness_check {
-    path = "/"
-  }
-  liveness_check {
-    path = "/"
-  }
-  automatic_scaling {
-    cpu_utilization {
-      target_utilization = 0.95
-    }
-  }
+resource "google_app_engine_application" "cloud_app" {
+  project       = var.project
+  location_id   = "europe-west3"
+  database_type = "CLOUD_FIRESTORE"
 }
 
-# app engine backend nodejs
-resource "google_app_engine_flexible_app_version" "nodeJSEndpoint" {
-  project    = "cloud-app"
-  service    = "nodeJSEndpoint"
+resource "google_project_service" "service" {
+  project                    = var.project
+  service                    = "appengineflex.googleapis.com"
+  disable_dependent_services = false
+}
+
+resource "google_service_account" "service_account" {
+  project      = var.project
+  account_id   = "cloud-app-sa"
+  display_name = "CloudApp Service Account"
+}
+
+resource "google_project_iam_member" "gae_api" {
+  for_each = var.roles
+  project  = var.project
+  role     = each.value
+  member   = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_storage_bucket" "app_engine" {
+  project       = var.project
+  name          = "${var.project}-app-engine"
+  location      = "EU"
+  force_destroy = true
+}
+
+resource "google_storage_bucket_object" "nodejsEndpoint" {
+  name   = "nodejsEndpoint.zip"
+  bucket = google_storage_bucket.app_engine.name
+  source = "../coderecources/nodeJSEndpoint.zip"
+}
+
+resource "google_app_engine_standard_app_version" "nodejsEndpoint" {
   version_id = "v1"
-  runtime    = "nodejs"
+  service    = "default"
+  runtime    = "nodejs16"
+
   entrypoint {
-    shell = "node index.js"
+    shell = "node ./nodejsEndpoint/index.js"
   }
+
   deployment {
     zip {
-      source_url = "../coderecources/nodeJSEndpoint.zip"
+      source_url = "https://storage.googleapis.com/${google_storage_bucket.app_engine.name}/${google_storage_bucket_object.nodejsEndpoint.name}"
     }
   }
-  readiness_check {
-    path = "/"
-  }
-  liveness_check {
-    path = "/"
-  }
-  automatic_scaling {
-    cpu_utilization {
-      target_utilization = 0.95
-    }
-  }
+
+  delete_service_on_destroy = true
+  service_account           = google_service_account.service_account.email
 }
-
-
