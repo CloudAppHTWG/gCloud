@@ -1,6 +1,6 @@
 variable "project" {
   type    = string
-  default = "cloud-app-366313"
+  default = "terraformtestproject-368119"
 }
 
 variable "region" {
@@ -10,5 +10,5 @@ variable "region" {
 
 variable "roles" {
   type    = set(string)
-  default = ["roles/compute.networkUser", "roles/logging.logWriter", "roles/storage.objectViewer"]
+  default = ["roles/compute.networkUser", "roles/logging.logWriter", "roles/storage.objectCreator", "roles/appengine.appAdmin", "roles/storage.objectViewer", "roles/firebase.admin"]
 }
